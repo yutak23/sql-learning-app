@@ -31,4 +31,5 @@ coverage
 *.tsbuildinfo
 
 .wrangler
-wrangler.*
+wrangler.toml
+!wrangler.toml.sample
