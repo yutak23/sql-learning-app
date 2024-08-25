@@ -5,19 +5,26 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
-		"build": "vite build",
+		"dev:server": "vite --mode server",
+		"build": "vite build && yarn build:server && yarn replace:routes",
+		"build:server": "vite build --mode server",
+		"replace:routes": "echo '{\"version\":1,\"include\":[\"/api/*\"],\"exclude\":[\"/assets/*\",\"/favicon.ico\",\"/index.html\"]}' > dist/_routes.json",
 		"preview": "vite preview",
+		"pages:dev": "rm -rf ./dist && yarn build && wrangler pages dev --port 8080",
 		"test:unit": "vitest",
 		"lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
 		"format": "prettier --write ."
 	},
 	"dependencies": {
+		"hono": "^4.5.8",
 		"pinia": "^2.1.7",
 		"vue": "^3.4.29",
 		"vue-router": "^4.3.3",
 		"vuetify": "^3.7.0"
 	},
 	"devDependencies": {
+		"@hono/vite-cloudflare-pages": "^0.4.2",
+		"@hono/vite-dev-server": "^0.14.0",
 		"@mdi/font": "^7.4.47",
 		"@rushstack/eslint-patch": "^1.8.0",
 		"@vitejs/plugin-vue": "^5.0.5",
@@ -38,6 +45,7 @@
 		"vite-plugin-node-polyfills": "^0.22.0",
 		"vite-plugin-vue-devtools": "^7.3.1",
 		"vite-plugin-vuetify": "^2.0.4",
-		"vitest": "^1.6.0"
+		"vitest": "^1.6.0",
+		"wrangler": "^3.72.2"
 	}
 }
