@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
 	if (mode === 'server')
 		return {
 			plugins: [
-				nodePolyfills({ protocolImports: true }),
+				nodePolyfills({ protocolImports: true, globals: { Buffer: true } }),
 				build({ entry: 'srv/index.js' }),
 				devServer({
 					adapter,
