@@ -1,81 +1,69 @@
 <template>
-	<v-data-table :headers="headers" :items="items" item-key="name" items-per-page="5"></v-data-table>
-	<div class="about">
-		<h1>This is an about page</h1>
-		<v-chip color="primary" @click="clickFetch"> Primary! </v-chip>
-	</div>
+	<v-data-table
+		:headers="headers"
+		:items="items"
+		hover
+		color="primary"
+		@click:row="clickRow"
+	></v-data-table>
 </template>
 
 <script>
+import { mapActions, mapState } from 'pinia';
+import { useProblemStore } from '@/stores/problem';
+import camelcaseKeys from 'camelcase-keys';
+import { useSettingStore } from '@/stores/setting';
+
 export default {
-	name: 'AboutView',
+	name: 'ProblemsView',
 	data: () => ({
 		headers: [
-			{ title: 'Pyramid', value: 'name' },
-			{ title: 'Location', value: 'location' },
-			{ title: 'Construction Date', value: 'constructionDate' },
-			{
-				title: 'Dimensions',
-				align: 'center',
-				children: [
-					{ title: 'Height (m)', value: 'height' },
-					{ title: 'Base (m)', value: 'base' },
-					{ title: 'Volume (m³)', value: 'volume' }
-				]
-			}
+			{ title: 'id', value: 'id' },
+			{ title: 'タイトル', value: 'title' },
+			{ title: '説明', value: 'description' }
+			// {
+			// 	title: '結果',
+			// 	align: 'center',
+			// 	children: [
+			// 		{ title: '1回目', value: '' },
+			// 		{ title: '2回目', value: '' },
+			// 		{ title: '3回目', value: '' }
+			// 	]
+			// }
 		],
-		items: [
-			{
-				name: 'Great Pyramid of Giza',
-				location: 'Egypt',
-				height: '146.6',
-				base: '230.4',
-				volume: '2583285',
-				constructionDate: 'c. 2580–2560 BC'
-			},
-			{
-				name: 'Pyramid of Khafre',
-				location: 'Egypt',
-				height: '136.4',
-				base: '215.3',
-				volume: '1477485',
-				constructionDate: 'c. 2570 BC'
-			},
-			{
-				name: 'Red Pyramid',
-				location: 'Egypt',
-				height: '104',
-				base: '220',
-				volume: '1602895',
-				constructionDate: 'c. 2590 BC'
-			},
-			{
-				name: 'Bent Pyramid',
-				location: 'Egypt',
-				height: '101.1',
-				base: '188.6',
-				volume: '1200690',
-				constructionDate: 'c. 2600 BC'
-			},
-			{
-				name: 'Pyramid of the Sun',
-				location: 'Mexico',
-				height: '65',
-				base: '225',
-				volume: '1237097',
-				constructionDate: 'c. 200 CE'
-			}
-		]
+		items: []
 	}),
+	computed: {
+		...mapState(useSettingStore, ['token'])
+	},
+	async created() {
+		await this.getProblems();
+	},
 	methods: {
-		async clickFetch() {
+		...mapActions(useProblemStore, ['setProblem']),
+		async getProblems() {
 			try {
-				const response = await fetch('/api/hono');
+				const response = await fetch('/api/problems', {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${this.token}`
+					}
+				});
 				const data = await response.json();
-				console.log(data);
+				if (!response.ok)
+					throw new Error(
+						data.message ? data.message : `getProblems HTTP error! status: ${response.status}`
+					);
+
+				this.items = camelcaseKeys(data, { deep: true });
 			} catch (error) {
 				console.log(error);
 			}
+		},
+		async clickRow(e, row) {
+			this.setProblem(row.item);
+			this.$router.push(`/problem/${row.item.id}`);
 		}
 	}
 };

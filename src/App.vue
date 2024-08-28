@@ -1,12 +1,12 @@
 <template>
 	<v-responsive class="border rounded">
-		<v-app>
+		<v-app class="bg-grey-lighten-3">
 			<v-app-bar color="primary" :elevation="2">
 				<template v-slot:prepend>
 					<v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 				</template>
 
-				<v-app-bar-title>App bar</v-app-bar-title>
+				<v-app-bar-title>SQLを学ぼう！</v-app-bar-title>
 			</v-app-bar>
 
 			<v-navigation-drawer v-model="drawer" persistent>
@@ -38,13 +38,11 @@
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld.vue';
-
 export default {
 	data: () => ({
 		drawer: false,
 		menus: [
-			{ title: 'Home', to: '/', icon: 'mdi-home' },
+			{ title: '設定', to: '/', icon: 'mdi-cog-outline' },
 			{ title: '問題一覧', to: '/problems', icon: 'mdi-file-document-multiple-outline' }
 		]
 	})

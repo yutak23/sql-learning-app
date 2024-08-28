@@ -33,3 +33,8 @@ coverage
 .wrangler
 wrangler.toml
 !wrangler.toml.sample
+
+.env
+.env.*
+data
+2_data.sql
