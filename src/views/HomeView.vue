@@ -31,7 +31,6 @@ export default {
 	},
 	async created() {
 		await this.login();
-		console.log('HomeView created');
 	},
 	methods: {
 		...mapActions(useSettingStore, ['setToken', 'setEndpoint']),
@@ -51,13 +50,11 @@ export default {
 					);
 
 				this.setToken(data.token);
-				console.log(data);
 			} catch (error) {
 				console.log(error);
 			}
 		},
 		setToEndpoint(e) {
-			console.log(e);
 			this.setEndpoint(e);
 		}
 	}
