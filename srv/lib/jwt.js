@@ -1,4 +1,5 @@
 import { SignJWT, jwtVerify } from 'jose';
+import { Buffer } from 'node:buffer';
 
 export default class JWT {
 	constructor(secretKeyString) {
