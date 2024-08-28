@@ -4,6 +4,7 @@
 		:items="items"
 		hover
 		color="primary"
+		:loading="isloading"
 		@click:row="clickRow"
 	></v-data-table>
 </template>
@@ -17,6 +18,7 @@ import { useSettingStore } from '@/stores/setting';
 export default {
 	name: 'ProblemsView',
 	data: () => ({
+		isloading: false,
 		headers: [
 			{ title: 'id', value: 'id' },
 			{ title: 'タイトル', value: 'title' },
@@ -37,7 +39,9 @@ export default {
 		...mapState(useSettingStore, ['token'])
 	},
 	async created() {
+		this.isloading = true;
 		await this.getProblems();
+		this.isloading = false;
 	},
 	methods: {
 		...mapActions(useProblemStore, ['setProblem']),
