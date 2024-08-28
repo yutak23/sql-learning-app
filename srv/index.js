@@ -35,8 +35,8 @@ if (import.meta.env.DEV) {
 }
 
 // ローカルに向けてリクエストできるようにする
-app.use('/api/problem/:id/prepare', cors());
-app.use('/api/execute', cors());
+app.use('/api/problem/:id/prepare', cors({ origin: [`http://192.168.56.5:3000`] }));
+app.use('/api/execute', cors({ origin: [`http://192.168.56.5:3000`] }));
 
 app.post('/api/login', async (c) => {
 	try {
