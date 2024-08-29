@@ -36,5 +36,6 @@ wrangler.toml
 
 .env
 .env.*
+!.env.example
 data
 2_data.sql

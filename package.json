@@ -13,6 +13,7 @@
 		"pages:dev": "rm -rf ./dist && yarn build && wrangler pages dev --port 8080",
 		"mysqldump:schema": "docker exec -t mysql_sql-learning-app mysqldump -u root --databases sql_learning_app --no-data | sed -e 's/ AUTO_INCREMENT=[0-9]*//' > ./mysql/sqls/1_schema.sql",
 		"mysqldump:data": "docker exec -t mysql_sql-learning-app mysqldump -u root -t --databases sql_learning_app --no-create-db > ./mysql/sqls/2_data.sql",
+		"mysql:create:db:sandbox": "docker exec -t mysql_sql-learning-app mysql -u root -e \"DROP DATABASE IF EXISTS sandbox; CREATE DATABASE sandbox;\"",
 		"test:unit": "vitest",
 		"lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
 		"format": "prettier --write ."

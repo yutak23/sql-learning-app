@@ -363,8 +363,11 @@ export default {
 		async registerResult({ isCorrect }) {
 			this.isLoading = true;
 			try {
+				const url = this.endpoint
+					? `${this.endpoint}/api/problem/${this.problem.id}/result`
+					: `/api/problem/${this.problem.id}/result`;
 				// 今時点では記録はしない。問題の準備で作成したデータベースのテーブルを削除するのみ。
-				const response = await fetch(`/api/problem/${this.problem.id}/result`, {
+				const response = await fetch(url, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',

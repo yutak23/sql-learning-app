@@ -13,7 +13,24 @@ services:
       - ./data/mysql:/var/lib/mysql
       - ./mysql/sqls:/docker-entrypoint-initdb.d
       - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
-  # ローカルのNavicatに接続させる場合は必須
+  serverless-mysql-http_sql_learning_app:
+    image: yutak23/serverless-mysql-http:latest
+    container_name: serverless-mysql-http_sql_learning_app
+    ports:
+      - 6000:6000
+      - 6443:6443
+    environment:
+      MYSQL_DATABASE: sql_learning_app
+      MYSQL_HOST: mysql # Using `mysql` hostname since they're in the same Docker network.
+  serverless-mysql-http_sandbox:
+    image: yutak23/serverless-mysql-http:latest
+    container_name: serverless-mysql-http_sandbox
+    ports:
+      - 7000:6000
+      - 7443:6443
+    environment:
+      MYSQL_DATABASE: sandbox
+      MYSQL_HOST: mysql # Using `mysql` hostname since they're in the same Docker network.
   # nginx:
   #   image: nginx:latest
   #   container_name: nginx
