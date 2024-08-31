@@ -68,6 +68,7 @@
 				<v-tabs-window v-model="tab">
 					<v-tabs-window-item :value="1">
 						<v-card-text>
+							<div ref="codemirrorEditor" class="editor-container"></div>
 							<v-alert v-if="queryError" type="error" class="mb-2">{{ queryError }}</v-alert>
 							<v-textarea
 								v-model="sql"
@@ -249,12 +250,15 @@ import isString from 'lodash/isString';
 import isNaN from 'lodash/isNaN';
 import fromPairs from 'lodash/fromPairs';
 import snakecaseKeys from 'snakecase-keys';
+import { EditorView, basicSetup } from 'codemirror';
+import { sql, MySQL } from '@codemirror/lang-sql';
 
 export default {
 	name: 'ProblemDetailView',
 	data: () => ({
 		isLoading: false,
 		tab: 1,
+		codemirrorEditor: null,
 		sql: '',
 		sqlResult: '',
 		queryError: null,
@@ -296,6 +300,13 @@ export default {
 		isDiffExceptResult() {
 			return this.diffParts.filter((part) => part.added || part.removed).length > 0;
 		}
+	},
+	mounted() {
+		this.codemirrorEditor = new EditorView({
+			doc: 'SELECT * FROM my_table;',
+			extensions: [basicSetup, sql({ dialect: MySQL, upperCaseKeywords: true })],
+			parent: this.$refs.codemirrorEditor
+		});
 	},
 	methods: {
 		async prepareDatabase() {
@@ -463,4 +474,7 @@ export default {
     font-size: 12px
 th.v-data-table__td.v-data-table-column--align-center.v-data-table__th
     user-select: text
+.editor-container
+    height: 300px
+    border: 1px solid #ccc
 </style>
