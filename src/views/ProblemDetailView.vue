@@ -461,4 +461,6 @@ export default {
 <style lang="sass">
 .small-textarea .v-input__control textarea
     font-size: 12px
+th.v-data-table__td.v-data-table-column--align-center.v-data-table__th
+    user-select: text
 </style>
