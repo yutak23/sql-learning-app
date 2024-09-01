@@ -69,14 +69,13 @@
 					<v-tabs-window-item :value="1">
 						<v-card-text>
 							<v-alert v-if="queryError" type="error" class="mb-2">{{ queryError }}</v-alert>
-							<v-textarea
-								v-model="sql"
-								label="SQL"
-								auto-grow
-								bg-color="black"
-								hide-details
-								class="text-white small-textarea"
-							/>
+
+							<div class="editor-container">
+								<div ref="toolbar" class="toolbar">
+									<button @click="formatSQL">🛠️ フォーマット</button>
+								</div>
+								<div ref="codemirrorEditor" class="editor-container"></div>
+							</div>
 						</v-card-text>
 						<v-card-actions>
 							<v-spacer></v-spacer>
@@ -249,13 +248,18 @@ import isString from 'lodash/isString';
 import isNaN from 'lodash/isNaN';
 import fromPairs from 'lodash/fromPairs';
 import snakecaseKeys from 'snakecase-keys';
+import { EditorView, basicSetup } from 'codemirror';
+import { keymap } from '@codemirror/view';
+import { oneDark } from '@codemirror/theme-one-dark';
+import { sql, MySQL } from '@codemirror/lang-sql';
+import { format } from 'sql-formatter';
 
 export default {
 	name: 'ProblemDetailView',
 	data: () => ({
 		isLoading: false,
 		tab: 1,
-		sql: '',
+		codemirrorEditor: null,
 		sqlResult: '',
 		queryError: null,
 		queryResultHeaders: [],
@@ -297,6 +301,40 @@ export default {
 			return this.diffParts.filter((part) => part.added || part.removed).length > 0;
 		}
 	},
+	mounted() {
+		const schema = {};
+		this.problem.prerequisiteTables.forEach((table) => {
+			const tableName = this.replaceSuffix(table.tableName);
+			schema[tableName] = [...table.colOrder.split(',')];
+		});
+
+		const formatKeymap = keymap.of([
+			{
+				key: 'Ctrl-s',
+				run: () => {
+					this.formatSQL();
+					return true;
+				}
+			}
+		]);
+
+		const tableName = this.replaceSuffix(this.problem.prerequisiteTables[0].tableName);
+		const firstColumn = this.problem.prerequisiteTables[0].colOrder.split(',')[0];
+		this.codemirrorEditor = new EditorView({
+			doc: `SELECT ${tableName}.${firstColumn} FROM ${tableName};`,
+			extensions: [
+				basicSetup,
+				sql({
+					schema,
+					dialect: MySQL,
+					upperCaseKeywords: true
+				}),
+				formatKeymap,
+				oneDark
+			],
+			parent: this.$refs.codemirrorEditor
+		});
+	},
 	methods: {
 		async prepareDatabase() {
 			this.isLoading = true;
@@ -335,7 +373,7 @@ export default {
 						'Content-Type': 'application/json',
 						Authorization: `Bearer ${this.token}`
 					},
-					body: JSON.stringify({ sql: this.sql })
+					body: JSON.stringify({ sql: this.codemirrorEditor.state.doc.toString() })
 				});
 				const data = await response.json();
 
@@ -396,6 +434,13 @@ export default {
 			this.queryError = null;
 			this.queryResultHeaders = [];
 			this.queryResultItems = [];
+		},
+		formatSQL() {
+			const currentSQL = this.codemirrorEditor.state.doc.toString();
+			const formattedSQL = format(currentSQL, { language: 'mysql' });
+			this.codemirrorEditor.dispatch({
+				changes: { from: 0, to: this.codemirrorEditor.state.doc.length, insert: formattedSQL }
+			});
 		},
 		diffExpectResult() {
 			const normalize = (array) => {
@@ -463,4 +508,6 @@ export default {
     font-size: 12px
 th.v-data-table__td.v-data-table-column--align-center.v-data-table__th
     user-select: text
+.editor-container
+    border: 1px solid #ccc
 </style>
