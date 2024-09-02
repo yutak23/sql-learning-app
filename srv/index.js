@@ -43,7 +43,7 @@ app.post('/api/login', async (c) => {
 	try {
 		const { email } = await c.req.json();
 		const jwt = new JWT(import.meta.env.VITE_JWT_SECRET);
-		const token = await jwt.sign({ email, suffix: `_${DateTime.local().toMillis()}` });
+		const token = await jwt.sign({ email, suffix: `_${DateTime.local().toUnixInteger()}` });
 		return c.json({ token }, 200);
 	} catch (e) {
 		return c.json({ message: e.message }, 500);
