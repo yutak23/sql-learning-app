@@ -72,7 +72,8 @@
 
 							<div class="editor-container">
 								<div ref="toolbar" class="toolbar">
-									<button @click="formatSQL">🛠️ フォーマット</button>
+									<v-btn density="compact" @click="formatSQL">🛠️ フォーマット</v-btn>
+									<span class="ml-2">Ctrl+S でフォーマットできます</span>
 								</div>
 								<div ref="codemirrorEditor" class="editor-container"></div>
 							</div>
@@ -330,7 +331,15 @@ export default {
 					upperCaseKeywords: true
 				}),
 				formatKeymap,
-				oneDark
+				oneDark,
+				EditorView.theme(
+					{
+						'.cm-content': {
+							fontSize: '16px'
+						}
+					},
+					{}
+				)
 			],
 			parent: this.$refs.codemirrorEditor
 		});
