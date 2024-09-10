@@ -34,7 +34,6 @@ CREATE TABLE `problems` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `prerequisite_tables` json NOT NULL,
   `prepare_sql` json NOT NULL,
   `expect_result` json NOT NULL,
   `expect_result_col_order` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
@@ -43,9 +42,8 @@ CREATE TABLE `problems` (
   `difficulty_level` enum('easy','medium','hard') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'easy',
   `book` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `book_chapter` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `prerequisite_tables` json DEFAULT NULL COMMENT 'prepare_sqlから作成するのでnull可',
   `another_solution_1` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `wrong_solution_2` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `hint_1` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE
@@ -79,4 +77,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-08-30  7:46:37
+-- Dump completed on 2024-09-10  7:56:48

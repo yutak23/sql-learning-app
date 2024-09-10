@@ -66,8 +66,49 @@ export default {
 			}
 		},
 		async clickRow(e, row) {
-			this.setProblem(row.item);
+			this.setProblem({
+				...row.item,
+				prerequisiteTables: camelcaseKeys(this.parseSQLToJSON(row.item.prepareSql), { deep: true })
+			});
 			this.$router.push(`/problem/${row.item.id}`);
+		},
+		parseSQLToJSON(sqlArray) {
+			// INSERT INTO部分のクエリを取得
+			const insertQuery = sqlArray.find((entry) => entry.query.startsWith('INSERT INTO')).query;
+
+			// テーブル名を取得
+			const tableNameMatch = insertQuery.match(/INSERT INTO (\S+)\s*\(/);
+			const tableName = tableNameMatch ? tableNameMatch[1] : '';
+
+			// カラム名を取得
+			const columnsMatch = insertQuery.match(/\(([^)]+)\) VALUES/);
+			const columns = columnsMatch
+				? columnsMatch[1].split(',').map((col) => col.trim().replace(/`/g, ''))
+				: [];
+
+			// VALUES部分を抽出
+			const valuesMatch = insertQuery.match(/VALUES\s*\((.+)\);/);
+			const valuesString = valuesMatch ? valuesMatch[1].split('), (') : [];
+
+			// データをパースしてJSON化
+			const rows = valuesString.map((rowStr) => {
+				const rowValues = rowStr.split(',').map((value) => value.trim().replace(/'/g, ''));
+				const rowObj = {};
+				columns.forEach((col, idx) => {
+					// NULLを空文字に変換
+					rowObj[col] = rowValues[idx] === 'NULL' ? '' : rowValues[idx];
+				});
+				return rowObj;
+			});
+
+			// 最終的なJSON形式に整形
+			return [
+				{
+					rows,
+					colOrder: columns.join(','),
+					tableName
+				}
+			];
 		}
 	}
 };
